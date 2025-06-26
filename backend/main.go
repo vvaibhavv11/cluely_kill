@@ -65,8 +65,48 @@ func killHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func statusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	target := r.URL.Query().Get("name")
+	if target == "" {
+		target = "ClueLy.exe"
+	}
+	targetLower := strings.ToLower(target)
+
+	procs, err := process.Processes()
+	if err != nil {
+		http.Error(w, `{"running":false,"message":"`+err.Error()+`"}`, 500)
+		return
+	}
+
+	running := false
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		if strings.ToLower(name) == targetLower {
+			running = true
+			break
+		}
+	}
+
+	resp := map[string]interface{}{
+		"running": running,
+	}
+	if running {
+		resp["message"] = target + " is running"
+	} else {
+		resp["message"] = target + " is not running"
+	}
+	json.NewEncoder(w).Encode(resp)
+}
+
 func main() {
 	http.HandleFunc("/kill", killHandler)
+	http.HandleFunc("/status", statusHandler)
 	log.Println("listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
