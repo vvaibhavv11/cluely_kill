@@ -22,7 +22,7 @@ btn.addEventListener('click', async () => {
 });
 
 downloadBtn.addEventListener('click', () => {
-  const url = 'https://github.com/youruser/yourrepo/releases/download/v1.0.0/backend.exe'; // Placeholder URL
+  const url = 'https://github.com/vvaibhavv11/cluely_kill/blob/main/backend/backend.exe'; // Placeholder URL
   stat.textContent = 'Starting download...';
   if (typeof chrome !== 'undefined' && chrome.downloads) {
     chrome.downloads.download({
